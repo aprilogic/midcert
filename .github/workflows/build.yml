@@ -48,6 +48,7 @@ jobs:
         with:
           name: midcert-${{ matrix.os }}-${{ matrix.arch }}
           path: midcert${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+          retention-days: 5
 
   release:
     name: Create Release
@@ -62,6 +63,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+          pattern: midcert-*
 
       - name: Create Release
         id: create_release
@@ -70,6 +72,12 @@ jobs:
           files: artifacts/midcert-*
           tag_name: v${{ github.run_number }}
           name: Release v${{ github.run_number }}
+          body: |
+            MidCert executables for various platforms:
+            - Linux (amd64)
+            - Windows (amd64)
+            - macOS (amd64)
+            - macOS (arm64)
           draft: false
           prerelease: false
         env:
