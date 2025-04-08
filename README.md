@@ -11,8 +11,10 @@ It's really meant to facilitate finding and adding those trusted certificates to
 * Outputs the cert chain as a PEM file, or to standard out.
 * Works on Windows, MacOS, and Linux
 
-## Commands
+## Running MidCert
 
-`midcerts detect` detects whether there is an SSL decrypting proxy in the environment, and reports some details about it.
+`midcert` detects whether there is an SSL decrypting proxy in the environment, and reports some details about it.
 
-`midcerts` detects an SSL proxy and if present, outputs the signing CA cert chain as a PEM file, `midcerts.pem`.
+`midcert -o midcerts.pem` optonally outputs the signing CA cert chain as a PEM file.
+
+`midcert -o -` optionally outputs the cert chain to std-out.
