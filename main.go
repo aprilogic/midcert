@@ -16,6 +16,7 @@ const mozillaCABundleURL = "https://curl.se/ca/cacert.pem"
 
 func main() {
 	outputFile := flag.String("o", "", "Output file for the CA certificate chain (use - for stdout)")
+	targetURL := flag.String("url", "https://www.google.com", "Target URL to check for MitM proxy")
 	flag.Parse()
 
 	// Download and load Mozilla's CA bundle
@@ -47,10 +48,10 @@ func main() {
 		},
 	}
 
-	// Try to connect to a known HTTPS site
-	resp, err = client.Get("https://www.google.com")
+	// Try to connect to the target site
+	resp, err = client.Get(*targetURL)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error connecting to test site: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error connecting to %s: %v\n", *targetURL, err)
 		os.Exit(1)
 	}
 	defer resp.Body.Close()
@@ -66,7 +67,7 @@ func main() {
 	mitmDetected := false
 	unknownCAs := []*x509.Certificate{}
 
-	fmt.Printf("Certificate chain:\n")
+	fmt.Printf("Certificate chain for %s:\n", *targetURL)
 	for i, cert := range certs {
 		fmt.Printf("\nCertificate %d:\n", i+1)
 		fmt.Printf("  Subject: %s\n", cert.Subject.CommonName)
