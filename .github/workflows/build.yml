@@ -13,16 +13,21 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
         include:
           - os: ubuntu-latest
+            goos: linux
             arch: amd64
           - os: windows-latest
+            goos: windows
+            arch: amd64
+          - os: macos-13
+            goos: darwin
             arch: amd64
           - os: macos-latest
-            arch: amd64
-          - os: macos-latest
+            goos: darwin
             arch: arm64
+
 
     steps:
       - uses: actions/checkout@v4
@@ -34,10 +39,10 @@ jobs:
 
       - name: Build
         env:
-          GOOS: ${{ matrix.os == 'windows-latest' && 'windows' || matrix.os == 'macos-latest' && 'darwin' || 'linux' }}
+          GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.arch }}
         run: |
-          go build -v -o midcert${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+          go build -v -o midcert-${{ matrix.goos == 'windows-latest' && '.exe' || '' }}
 
       - name: Test
         run: |
@@ -46,8 +51,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: midcert-${{ matrix.os }}-${{ matrix.arch }}
-          path: midcert${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+          name: midcert-${{ matrix.goos }}-${{ matrix.arch }}
+          path: midcert-${{ matrix.goos == 'windows-latest' && '.exe' || '' }}
           retention-days: 5
 
   release:
